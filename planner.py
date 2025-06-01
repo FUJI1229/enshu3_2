@@ -35,15 +35,14 @@ class Base_Planner(ABC):
         self.dialogue_user = ''
         self.dialogue_logger = ''
         self.show_dialogue = False
-
-        if not offline:
-            self.client = AzureOpenAI(
-                api_key=os.getenv("AZURE_OPENAI_KEY"),
-                api_version=os.getenv("AZURE_OPENAI_VERSION"),
-                azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT")
-            )
-            self.model = os.getenv("AZURE_OPENAI_MODEL")
-            self.dialogue_system += self.prompt_prefix
+        
+        self.client = AzureOpenAI(
+            api_key=os.getenv("AZURE_OPENAI_KEY"),
+            api_version=os.getenv("AZURE_OPENAI_VERSION"),
+            azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT")
+        )
+        self.model = os.getenv("AZURE_OPENAI_MODEL")
+        self.dialogue_system += self.prompt_prefix
         
     def reset(self, show=False):
         self.dialogue_user = ''
