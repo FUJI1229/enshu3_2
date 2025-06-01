@@ -30,10 +30,10 @@ class Game:
         # init seed
         self.seed = args.seed
         self.setup_seed(args.seed)
-        
         # init env
+        
         self.load_task_info(args.task, args.frame_stack, args.offline_planner, args.soft_planner)
-
+        
         # init logger
         self.logger = utils.create_logger(args, training)
         
@@ -123,7 +123,6 @@ class Game:
                 print("{:.2f} s to optimizer| loss {:6.3f}, entropy {:6.3f}, kickstarting {:6.3f}.".format(opt_time, mean_losses[0], mean_losses[1], mean_losses[2]))
             except:
                 print(mean_losses)
-
             ## evaluate ##
             if itr % self.eval_interval == 0 and itr > 0:
                 evaluate_start = time.time()
@@ -205,7 +204,6 @@ class Game:
                 
                 # get action from teacher policy
                 teacher_probs = self.teacher_policy(obs[0])
-                
                 # interact with env
                 next_obs, reward, done, info = self.env.step(action)
     

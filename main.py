@@ -65,7 +65,6 @@ if __name__ == "__main__":
     utils.print_logo(subtitle="Maintained by Research Center for Applied Mathematics and Machine Intelligence, Zhejiang Lab")
     parser = argparse.ArgumentParser()
     parser.add_argument("--task", type=str, default="SimpleDoorKey", help="SimpleDoorKey, KeyInBox, RandomBoxKey, ColoredDoorKey, DynamicDoorKey") 
-    
     # parser.add_argument("--env_seed", type=int, default=0)
     parser.add_argument("--env_seed_list", type=int, nargs="*", default=[0], help="Seeds for evaluation environments")
     parser.add_argument("--seed_list", type=int, nargs="*", default=[0], help="Seeds for Numpy, Torch and LLM")
@@ -78,7 +77,6 @@ if __name__ == "__main__":
     parser.add_argument("--lam", type=float, default=0.95, help="Generalized advantage estimate discount")
     parser.add_argument("--gamma", type=float, default=0.99, help="MDP discount")
     parser.add_argument("--recurrent", default=False, action='store_true')
-    
     parser.add_argument("--logdir", type=str, default="log") # Where to log diagnostics to
     parser.add_argument("--loaddir", type=str, default=None)
     parser.add_argument("--loadmodel", type=str, default="acmodel")
@@ -90,7 +88,6 @@ if __name__ == "__main__":
     parser.add_argument("--num_eval", type=int, default=10)
     parser.add_argument("--eval_interval", type=int, default=10)
     parser.add_argument("--save_interval", type=int, default=100)
-    
     if sys.argv[1] == 'eval':
         sys.argv.remove(sys.argv[1])
         args = parser.parse_args()
