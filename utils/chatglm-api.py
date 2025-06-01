@@ -1,105 +1,21 @@
-from typing import Union, Dict, List, Any,Optional
+from openai import AzureOpenAI
+import os
+from dotenv import load_dotenv
 
-import argparse
-import json
-import logging
+load_dotenv()
 
-import fastapi
-import httpx
-import uvicorn
-
-
-from pydantic import BaseModel
-
-class Conversation:
-    system: str
-    roles: List[str]
-    messages: List[List[str]]
-    
-    def __init__(self,system, roles, messages):
-        self.system = system
-        self.roles = roles
-        self.messages = messages
-    
-conv = Conversation(
-    system="A chat between a curious user and an artificial intelligence assistant. ",
-    roles=(["USER", "Assistant"]),
-    prompt=(),
+client = AzureOpenAI(
+    api_key=os.getenv("AZURE_OPENAI_KEY"),
+    api_version="2024-12-01-preview",
+    azure_endpoint="https://fuji29.openai.azure.com/"
 )
 
+response = client.chat.completions.create(
+    model="gpt-4o-mini",
+    messages=[
+        {"role": "system", "content": "You are a helpful assistant."},
+        {"role": "user", "content": "こんにちは、今日の天気は？"}
+    ]
+)
 
-app = fastapi.FastAPI()
-
-headers = {"User-Agent": "FastChat API Server"}
-
-
-
-class Request(BaseModel):
-    model: str
-    prompt: List[Dict[str, str]]
-    top_p: Optional[float] =0.7
-    temperature: Optional[float] = 0.7
-    
-
-@app.post("/v1/chat/completions")
-async def chat_completion(request: Request):
-    """Creates a completion for the chat message"""
-    conv.prompt =[]
-    payload = generate_payload(request.prompt)    
-    content = await invoke_example(request.model, payload)
-    
-    generate_payload(content)
-        
-        
-    print('a',content)
-    return content[0]['content']
-    
-
-
-import zhipuai
- 
-# your api key
-zhipuai.api_key = "you_api_key"
-
-async def invoke_example(model,prompt):
-
-    response = zhipuai.model_api.invoke(
-        model= model,
-        prompt=prompt,
-        top_p=0.7,
-        temperature=0.7,
-    )
-    
-    return response['data']['choices']
-
-
-
-def generate_payload(messages: List[Dict[str, str]]):
-
-    conv.prompt = list(conv.prompt)
-    for message in prompt:
-       
-        msg_role = message["role"]
-        
-        if msg_role == "user":
-            conv.messages.append({'role': conv.roles[0], 'content': message["content"]})
-        elif msg_role == "assistant":
-            conv.messages.append({'role': conv.roles[1], 'content': message["content"]})
-        else:
-            raise ValueError(f"Unknown role: {msg_role}")
-    
-    return conv.messages
-  
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="ChatGLM-compatible Restful API server.")
-    parser.add_argument("--host", type=str, default="10.109.116.3", help="host name")
-    parser.add_argument("--port", type=int, default=6000, help="port number")
- 
-    args = parser.parse_args()
-    uvicorn.run("chatglm-api:app", host=args.host, port=args.port, reload=False)
-    
-    
-    
-    
-    
-    
+print(response.choices[0].message.content)
