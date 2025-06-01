@@ -17,6 +17,8 @@ from utils import global_param
 
 from abc import ABC, abstractmethod
 
+load_dotenv()
+
 class Base_Planner(ABC):
     """The base class for Planner."""
 
@@ -27,20 +29,20 @@ class Base_Planner(ABC):
         self.prompt_prefix = prefix
         self.plans_dict = {}
         self.mediator = None
-        
-        self.dialogue_system = ''               
+
+        self.dialogue_system = ''
         self.dialogue_user = ''
-        self.dialogue_logger = ''     
+        self.dialogue_logger = ''
         self.show_dialogue = False
-        
+
         if not offline:
-            self.llm_model = "vicuna-33b"
-            self.llm_url = 'http://localhost:3300/v1/chat/completions'
-            # self.llm_model = "chatglm_Turbo"
-            # self.llm_url = 'http://10.109.116.3:6000/chat'
-            self.plans_dict = {}
-            if self.llm_model == "vicuna-33b":
-                self.init_llm()
+            self.client = AzureOpenAI(
+                api_key=os.getenv("AZURE_OPENAI_KEY"),
+                api_version=os.getenv("AZURE_OPENAI_VERSION", "2024-12-01-preview"),
+                azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT")
+            )
+            self.model = os.getenv("AZURE_OPENAI_MODEL", "gpt-4o-mini")
+            self.dialogue_system += self.prompt_prefix
         
     def reset(self, show=False):
         self.dialogue_user = ''
@@ -77,33 +79,28 @@ class Base_Planner(ABC):
 
     def query_codex(self, prompt_text):
         server_error_cnt = 0
-        while server_error_cnt < 10:
+        while server_error_cnt < 3:
             try:
-                #response =  openai.Completion.create(prompt_text)
-                headers = {'Content-Type': 'application/json'}
-                
-                # print(f"user prompt:{prompt_text}")
-                if self.llm_model == "chatglm_Turbo":
-                    data = {'model': self.llm_model, "prompt":[{"role": "user", "content": self.prompt_prefix + prompt_text}]}     
-                elif self.llm_model == "vicuna-33b":
-                    data = {'model': self.llm_model, "messages":[{"role": "user", "content": prompt_text}]}
-                response = requests.post(self.llm_url, headers=headers, json=data)
-
-                if response.status_code == 200:
-                    result = response.json()
-                    break
-                else:
-                    assert False, f"fail to query: status code {response.status_code}"
-                    
+                messages = [
+                    {"role": "system", "content": self.prompt_prefix},
+                    {"role": "user", "content": prompt_text}
+                ]
+                response = self.client.chat.completions.create(
+                    model=self.model,
+                    messages=messages
+                )
+                result = response.choices[0].message.content
+                break
             except Exception as e:
                 server_error_cnt += 1
-                print(f"fail to query: {e}")
-                
+                print(f"[Azure LLM Error] {e}")
+                continue
+
         try:
-            plan = re.search("Action[s]*\:\s*\{([\w\s\<\>\,]*)\}", result, re.I | re.M).group(1)
+            plan = re.search(r"Action[s]*\:\s*\{([\w\s\<\>\,]*)\}", result, re.I | re.M).group(1)
             return plan
         except:
-            print(f"LLM response invalid format: '{result}'.")
+            print(f"[LLM Response Invalid] Could not parse: {result}")
             return self.query_codex(prompt_text)   
         
     def plan(self, text, n_ask=10):
