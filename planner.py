@@ -13,7 +13,8 @@ import os, requests
 from typing import Any
 from mediator import *
 from utils import global_param
-
+from openai import AzureOpenAI
+from dotenv import load_dotenv
 
 from abc import ABC, abstractmethod
 
