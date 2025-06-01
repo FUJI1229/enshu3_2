@@ -3,15 +3,30 @@ import os,json, sys
 import numpy as np
 # single gpu
 
-os.system('nvidia-smi -q -d Memory | grep -A5 GPU | grep Free > tmp.txt')
-memory_gpu = [int(x.split()[2]) for x in open('tmp.txt', 'r').readlines()]
-os.environ["CUDA_VISIBLE_DEVICES"] = str(np.argmax(memory_gpu)) 
-os.system('rm tmp.txt')
+try:
+    ret = os.system('nvidia-smi -q -d Memory | grep -A5 GPU | grep Free > tmp.txt')
+    if ret != 0:
+        raise RuntimeError("nvidia-smi 実行に失敗")
+
+    with open('tmp.txt', 'r') as f:
+        lines = f.readlines()
+
+    memory_gpu = [int(x.split()[2]) for x in lines if len(x.split()) >= 3]
+
+    if memory_gpu:
+        os.environ["CUDA_VISIBLE_DEVICES"] = str(np.argmax(memory_gpu))
+    else:
+        print("GPU情報が取得できませんでした。CPUを使用します。")
+except Exception as e:
+    print(f"GPUが使えないためCPUを使用します: {e}")
+
+finally:
+    os.system('rm -f tmp.txt')
 
 import torch
 import utils
 from Game import Game
-    
+
 def train(args):
     for i in args.seed_list:
         args.savedir = args.savedir + "-" + str(i)
