@@ -89,7 +89,8 @@ class Game:
         self.env = utils.WrapEnv(env_fn)
         self.obs_space = utils.get_obss_preprocessor(self.env.observation_space)[0]
         self.action_space = self.env.action_space.n
-        self.max_ep_len = self.env.max_steps
+        self.max_ep_len = self.env.unwrapped.max_steps
+
 
         prefix = task_info[task]['description'] + task_info[task]['example']
         self.teacher_policy = TeacherPolicy(task, offline, soft, prefix, self.action_space, self.env.agent_view_size)
