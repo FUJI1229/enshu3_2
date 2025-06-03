@@ -153,7 +153,7 @@ class HistoricalObsEnv(MiniGridEnv):
         
         self.mask = np.zeros(shape=(self.width, self.height), dtype=bool)
         
-    def reset(self, seed=None):
+    def reset(self, seed=None,options =None):
         super().reset(seed=seed)
         self.mask = np.zeros(shape=(self.width, self.height), dtype=bool)
         topX, topY, botX, botY = self.get_view_exts(agent_view_size=None, clip=True)

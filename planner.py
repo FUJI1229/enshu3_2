@@ -30,7 +30,6 @@ class Base_Planner(ABC):
         self.prompt_prefix = prefix
         self.plans_dict = {}
         self.mediator = None
-
         self.dialogue_system = ''
         self.dialogue_user = ''
         self.dialogue_logger = ''
@@ -48,34 +47,9 @@ class Base_Planner(ABC):
         self.dialogue_user = ''
         self.dialogue_logger = ''
         self.show_dialogue = show
-        ## reset dialogue
         if self.show_dialogue:
             print(self.dialogue_system)
         self.mediator.reset()
-        # if not self.offline:
-        #     self.online_planning("reset")
-        
-    def init_llm(self):
-        self.dialogue_system += self.prompt_prefix
-
-        ## set system part
-        server_error_cnt = 0
-        while server_error_cnt < 10:
-            try:
-                headers = {'Content-Type': 'application/json'}
-                
-                data = {'model': self.llm_model, "messages":[{"role": "system", "content": self.prompt_prefix}]}
-                response = requests.post(self.llm_url, headers=headers, json=data)
-                
-                if response.status_code == 200:
-                    result = response.json()
-                    break
-                else:
-                    assert False, f"fail to initialize: status code {response.status_code}"                
-                    
-            except Exception as e:
-                server_error_cnt += 1
-                print(f"fail to initialize: {e}")
 
     def query_codex(self, prompt_text):
         server_error_cnt = 0
@@ -88,9 +62,9 @@ class Base_Planner(ABC):
                 response = self.client.chat.completions.create(
                     model=self.model,
                     messages=messages,
-                    max_tokens=16384,
+                    max_tokens=500,
                     temperature=1.0,
-                    top_p=0.8,
+                    top_p=1.0,
                 )
                 result = response.choices[0].message.content
                 #print(f"[LLM Response] {result}")

@@ -206,6 +206,7 @@ class Game:
                 teacher_probs = self.teacher_policy(obs[0])
                 # interact with env
                 next_obs, reward, done, info = self.env.step(action)
+                
     
                 # store in buffer
                 self.buffer.store(obs, 

@@ -34,8 +34,8 @@ class WrapEnv:
     def render(self):
         self.env.render()
 
-    def reset(self, seed=None):
-        state, *_ = self.env.reset(seed=seed)
+    def reset(self, seed=None, options=None):
+        state, *_ = self.env.reset(seed=seed, options=None)
         if isinstance(state, tuple):
             ## gym state is tuple type
             return np.array([state[0]])

@@ -79,7 +79,7 @@ if __name__ == "__main__":
     parser.add_argument("--recurrent", default=False, action='store_true')
     parser.add_argument("--logdir", type=str, default="log") # Where to log diagnostics to
     parser.add_argument("--loaddir", type=str, default=None)
-    parser.add_argument("--loadmodel", type=str, default="acmodel")
+    parser.add_argument("--loadmodel", type=str, default="acmodel.pt")
     parser.add_argument("--savedir", type=str, required=True, help="path to folder containing policy and run details")
     
     parser.add_argument("--offline_planner", default=False, action='store_true')
