@@ -89,10 +89,10 @@ class Game:
         self.env = utils.WrapEnv(env_fn)
         self.obs_space = utils.get_obss_preprocessor(self.env.observation_space)[0]
         self.action_space = self.env.action_space.n
-        self.max_ep_len = self.env.max_steps
+        self.max_ep_len = self.env.unwrapped.max_steps
 
         prefix = task_info[task]['description'] + task_info[task]['example']
-        self.teacher_policy = TeacherPolicy(task, offline, soft, prefix, self.action_space, self.env.agent_view_size)
+        self.teacher_policy = TeacherPolicy(task, offline, soft, prefix, self.action_space, len(self.env.observation_space.spaces['image'].shape))
 
             
     def train(self):
@@ -244,7 +244,7 @@ class Game:
             # init vedio directory
             if record_frames:
                 img_array = []
-                img = self.env.get_mask_render()
+                img = self.env.unwrapped.get_mask_render()
                 img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
                 img_array.append(img)
                 
@@ -277,7 +277,7 @@ class Game:
                 ep_len += 1
                 
                 if record_frames:
-                    img = self.env.get_mask_render()
+                    img = self.env.unwrapped.get_mask_render()
                     img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
                     img_array.append(img)
                 

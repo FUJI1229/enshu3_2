@@ -95,7 +95,7 @@ class DoorKeyEnv(HistoricalObsEnv):
           
     def step(self, action):
         obs, reward, terminated, truncated, info = super().step(action)
-
+        super().render()
         if action == self.actions.toggle:
             if self.door.is_open:
                 reward = self._reward()

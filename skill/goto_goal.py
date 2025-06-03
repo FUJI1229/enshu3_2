@@ -137,7 +137,9 @@ class GoTo_Goal(BaseSkill):
         else:
             cur_dir = path[0][2]
             next_dir = path[1][2]
-            angle = (cur_dir - next_dir) % 4 
+            angle = (cur_dir - next_dir) % 4
+            
+            #angle = int(int(cur_dir) - int(next_dir)) % 4
             if angle == 1:
                 action = 0
             elif angle == 3:

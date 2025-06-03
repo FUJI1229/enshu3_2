@@ -79,21 +79,21 @@ class Base_Planner(ABC):
 
     def query_codex(self, prompt_text):
         server_error_cnt = 0
-        while server_error_cnt < 3:
+        while server_error_cnt < 10:
             try:
                 messages = [
-                    {"role": "system", "content": self.prompt_prefix},
-                    {"role": "user", "content": prompt_text}
+                    {"role": "user", "content": self.prompt_prefix + prompt_text}
                 ]
                 #print(messages)
                 response = self.client.chat.completions.create(
                     model=self.model,
                     messages=messages,
-                    max_tokens=4096,
+                    max_tokens=16384,
                     temperature=1.0,
-                    top_p=1.0,
+                    top_p=0.8,
                 )
                 result = response.choices[0].message.content
+                #print(f"[LLM Response] {result}")
                 break
             except Exception as e:
                 server_error_cnt += 1
@@ -105,8 +105,8 @@ class Base_Planner(ABC):
             return plan
         except:
             print(f"[LLM Response Invalid] Could not parse: {result}")
-            return self.query_codex(prompt_text)   
-        
+            return self.query_codex(prompt_text)
+    
     def plan(self, text, n_ask=10):
         if text in self.plans_dict.keys():
             plans, probs = self.plans_dict[text]
@@ -125,7 +125,6 @@ class Base_Planner(ABC):
             
             for k, v in self.plans_dict.items():
                 print(f"{k}:{v}")
-
         return plans, probs
     
     def __call__(self, obs):

@@ -32,7 +32,7 @@ class Explore(BaseSkill):
             
     def get_view(self, agent_dir, agent_pos=None):
         agent_pos = agent_pos if agent_pos else self.agent_pos
-            
+        #agent_dir = int(agent_dir)
         # Facing right
         if agent_dir == 0:
             topX = agent_pos[0]
@@ -108,7 +108,7 @@ class Explore(BaseSkill):
     def __call__(self, obs):
         self.unpack_obs(obs) 
         self.get_room_boundary()
-        
+        #self.agent_dir = int(self.agent_dir)
         terminated = False
         # avoid object
         if self.object_forward(self.agent_dir) == 2:

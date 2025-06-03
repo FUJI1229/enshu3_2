@@ -99,6 +99,7 @@ class PPO(Base):
                 value_loss = torch.max(surr1, surr2).mean()
                 
                 loss = policy_loss + self.value_loss_coef * value_loss - self.entropy_coef * entropy_loss
+                
                 if self.iter < self.iter_with_ks:
                     loss += self.ks_coef * kickstarting_loss
 

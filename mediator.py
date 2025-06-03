@@ -131,7 +131,7 @@ class Base_Mediator(ABC):
         obs_object = copy.deepcopy(obs[:,:,0])
         agent_map = obs[:, :, 3]
         agent_pos = np.argwhere(agent_map != 4)[0]
-        agent_dir = agent_map[agent_pos[0],agent_pos[1]]
+        agent_dir = int(agent_map[agent_pos[0],agent_pos[1]])
 
         key_list = np.argwhere(obs_object==5)
         door_list = np.argwhere(obs_object==4)
