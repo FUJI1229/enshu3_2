@@ -62,11 +62,12 @@ class Base_Planner(ABC):
                 response = self.client.chat.completions.create(
                     model=self.model,
                     messages=messages,
-                    max_tokens=1000,
-                    temperature=1.0,
-                    top_p=1.0,
+                    max_tokens=100,
+                    temperature=0.9,
+                    top_p=0.9,
                 )
                 result = response.choices[0].message.content
+                #print(f"[LLM Prompt] {self.prompt_prefix + prompt_text}")
                 #print(f"[LLM Response] {result}")
                 break
             except Exception as e:
