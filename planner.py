@@ -62,7 +62,7 @@ class Base_Planner(ABC):
                 response = self.client.chat.completions.create(
                     model=self.model,
                     messages=messages,
-                    max_tokens=120,
+                    max_tokens=200,
                     temperature=0.9,
                     top_p=0.9,
                 )
