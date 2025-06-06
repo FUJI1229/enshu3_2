@@ -165,10 +165,12 @@ class Base_Mediator(ABC):
                 self.obj_coordinate[obj] = (i,j)
 
         if context == '':
-            context += "<nothing>, "
+            context +=  '<nothing>, '
+        else:
+            context = context[:-2] + ' several tiles away and '
         context += f"holds <{carrying}>."
         
-        context = f"Agent sees {context}"
+        context = f"Agent sees {context} "
         return context
 
     def LLM2RL(self, plans, probs):

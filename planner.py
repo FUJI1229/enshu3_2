@@ -62,8 +62,8 @@ class Base_Planner(ABC):
                 response = self.client.chat.completions.create(
                     model=self.model,
                     messages=messages,
-                    max_tokens=200,
-                    temperature=0.9,
+                    max_tokens=1000,
+                    temperature=1.25,
                     top_p=0.9,
                 )
                 result = response.choices[0].message.content
@@ -104,7 +104,7 @@ class Base_Planner(ABC):
     
     def __call__(self, obs):
         # self.mediator.reset()
-        text = self.mediator.RL2LLM(obs)
+        text = self.mediator.RL2LLM(obs)#observatoion を　自然言語にしているだけc(s)
         plans, probs = self.plan(text)
         self.dialogue_user = text + "\n" + str(plans) + "\n" + str(probs)
         if self.show_dialogue:

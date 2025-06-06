@@ -81,7 +81,6 @@ if __name__ == "__main__":
     parser.add_argument("--loaddir", type=str, default=None)
     parser.add_argument("--loadmodel", type=str, default="acmodel.pt")
     parser.add_argument("--savedir", type=str, required=True, help="path to folder containing policy and run details")
-    
     parser.add_argument("--offline_planner", default=False, action='store_true')
     parser.add_argument("--soft_planner", default=False, action='store_true')
     parser.add_argument("--eval_teacher", default=False, action='store_true')
