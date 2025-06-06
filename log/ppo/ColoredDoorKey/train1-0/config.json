@@ -1,0 +1,29 @@
+{
+    "batch_size": 128,
+    "device": "cpu",
+    "env_seed_list": [
+        0
+    ],
+    "eval_interval": 10,
+    "eval_teacher": false,
+    "frame_stack": 1,
+    "gamma": 0.99,
+    "lam": 0.95,
+    "loaddir": null,
+    "loadmodel": "acmodel.pt",
+    "logdir": "log",
+    "n_itr": 16000,
+    "num_eval": 10,
+    "offline_planner": false,
+    "policy": "ppo",
+    "recurrent": false,
+    "save_interval": 100,
+    "savedir": "train1-0",
+    "seed": 0,
+    "seed_list": [
+        0
+    ],
+    "soft_planner": false,
+    "task": "ColoredDoorKey",
+    "traj_per_itr": 10
+}
