@@ -51,56 +51,71 @@ class Base_Planner(ABC):
             print(self.dialogue_system)
         self.mediator.reset()
 
-    def query_codex(self, prompt_text):
+    def query_codex(self, prompt_text, n_ask):
+    
         server_error_cnt = 0
         while server_error_cnt < 10:
             try:
                 messages = [
                     {"role": "user", "content": self.prompt_prefix + prompt_text}
                 ]
-                #print(messages)
                 response = self.client.chat.completions.create(
                     model=self.model,
                     messages=messages,
-                    max_tokens=1000,
+                    max_tokens=10000,
                     temperature=1.25,
                     top_p=0.9,
+                    n=n_ask
                 )
-                result = response.choices[0].message.content
-                #print(f"[LLM Prompt] {self.prompt_prefix + prompt_text}")
-                #print(f"[LLM Response] {result}")
+                results = [choice.message.content for choice in response.choices]
                 break
             except Exception as e:
                 server_error_cnt += 1
                 print(f"[Azure LLM Error] {e}")
                 continue
 
-        try:
-            plan = re.search(r"Action[s]*\:\s*\{([\w\s\<\>\,]*)\}", result, re.I | re.M).group(1)
-            return plan
-        except:
-            print(f"[LLM Response Invalid] Could not parse: {result}")
-            return self.query_codex(prompt_text)
+        plans = []
+        for idx, result in enumerate(results):
+            try:
+                match = re.search(r"Action[s]*\:\s*\{([\w\s\<\>\,\-]*)\}", result, re.I | re.M)
+                if match:
+                    plans.append(match.group(1))
+                else:
+                    print(f"[LLM Response Invalid #{idx}] Could not parse: {result}")
+            except Exception as e:
+                print(f"[Parsing Error #{idx}] {e}")
+
+        if not plans:
+            # 1件も成功しなかった場合はリトライ
+            return self.query_codex(prompt_text, n_ask)
+
+        return plans
+
     
     def plan(self, text, n_ask=10):
         if text in self.plans_dict.keys():
             plans, probs = self.plans_dict[text]
         else:
             print(f"new obs: {text}")
-            plans = {}
-            for _ in range(n_ask):
-                plan = self.query_codex(text)
-                if plan in plans.keys():
-                    plans[plan] += 1/n_ask
+            plans_count = {}
+
+            # query_codex は n_ask 個の応答を返すリスト
+            plans_list = self.query_codex(text, n_ask)
+
+            for plan in plans_list:
+                if plan in plans_count:
+                    plans_count[plan] += 1 / n_ask
                 else:
-                    plans[plan] = 1/n_ask
-            
-            plans, probs = list(plans.keys()), list(plans.values())
+                    plans_count[plan] = 1 / n_ask
+
+            plans, probs = list(plans_count.keys()), list(plans_count.values())
             self.plans_dict[text] = (plans, probs)
-            
+
             for k, v in self.plans_dict.items():
-                print(f"{k}:{v}")
+                print(f"{k}: {v}")
+
         return plans, probs
+
     
     def __call__(self, obs):
         # self.mediator.reset()
