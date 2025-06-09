@@ -12,18 +12,18 @@
     "loaddir": null,
     "loadmodel": "acmodel.pt",
     "logdir": "log",
-    "n_itr": 16000,
+    "n_itr": 20000,
     "num_eval": 10,
     "offline_planner": false,
     "policy": "ppo",
     "recurrent": false,
     "save_interval": 100,
-    "savedir": "train1-0",
+    "savedir": "train_n_ask-0",
     "seed": 0,
     "seed_list": [
         0
     ],
     "soft_planner": false,
-    "task": "ColoredDoorKey",
+    "task": "SimpleDoorKey",
     "traj_per_itr": 10
 }
